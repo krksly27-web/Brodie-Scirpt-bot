@@ -10,6 +10,8 @@ import {
 } from 'discord.js';
 import { login } from './api.js';
 import { getRequiredRole } from './roleConfig.js';
+import { getGuildLang } from './langConfig.js';
+import { t } from './i18n.js';
 
 // ---- Load commands ----
 import * as genkey from './commands/genkey.js';
@@ -18,13 +20,14 @@ import * as reset from './commands/reset.js';
 import * as ban from './commands/ban.js';
 import * as unban from './commands/unban.js';
 import * as setrole from './commands/setrole.js';
+import * as langue from './commands/langue.js';
 
 type Command = {
   data: { name: string; toJSON: () => unknown };
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 };
 
-const commands: Command[] = [genkey, extraday, reset, ban, unban, setrole];
+const commands: Command[] = [genkey, extraday, reset, ban, unban, setrole, langue];
 
 const commandMap = new Collection<string, Command>();
 for (const cmd of commands) {
@@ -33,10 +36,10 @@ for (const cmd of commands) {
 
 // ---- Validate env ----
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
-const GUILD_ID = process.env.DISCORD_GUILD_ID; // optional — instant registration in one guild
+const GUILD_ID = process.env.DISCORD_GUILD_ID;
 
 if (!TOKEN) {
-  console.error('❌ DISCORD_BOT_TOKEN manquant dans les variables d\'environnement');
+  console.error('❌ DISCORD_BOT_TOKEN manquant');
   process.exit(1);
 }
 if (!process.env.API_ADMIN_USERNAME || !process.env.API_ADMIN_PASSWORD) {
@@ -60,7 +63,6 @@ async function registerCommands(clientId: string) {
 
 // ---- Check if user has required role ----
 function hasAccess(interaction: ChatInputCommandInteraction): boolean {
-  // setrole is always restricted to admins via setDefaultMemberPermissions
   if (interaction.commandName === 'setrole') return true;
 
   const guildId = interaction.guildId;
@@ -68,27 +70,20 @@ function hasAccess(interaction: ChatInputCommandInteraction): boolean {
 
   const requiredRoleId = getRequiredRole(guildId);
   const member = interaction.member as GuildMember | null;
-
   if (!member) return false;
 
-  // Admin can always use commands
   if (member.permissions.has(PermissionFlagsBits.Administrator)) return true;
-
-  // If no role configured, only admins
   if (!requiredRoleId) return false;
 
   return member.roles.cache.has(requiredRoleId);
 }
 
 // ---- Bot client ----
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
-});
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once('ready', async (c) => {
   console.log(`🤖 Bot connecté en tant que ${c.user.tag}`);
 
-  // Login to admin API
   try {
     await login();
     console.log('✅ Connecté au panneau admin API');
@@ -96,7 +91,6 @@ client.once('ready', async (c) => {
     console.error('❌ Échec connexion API:', err instanceof Error ? err.message : err);
   }
 
-  // Register slash commands
   try {
     await registerCommands(c.user.id);
   } catch (err) {
@@ -111,10 +105,8 @@ client.on('interactionCreate', async (interaction) => {
   if (!command) return;
 
   if (!hasAccess(interaction)) {
-    await interaction.reply({
-      content: '❌ Vous n\'avez pas la permission d\'utiliser cette commande.',
-      ephemeral: true,
-    });
+    const lang = getGuildLang(interaction.guildId ?? '');
+    await interaction.reply({ content: t(lang).noPermission, ephemeral: true });
     return;
   }
 
@@ -122,7 +114,8 @@ client.on('interactionCreate', async (interaction) => {
     await command.execute(interaction);
   } catch (err) {
     console.error(`Erreur commande /${interaction.commandName}:`, err);
-    const msg = '❌ Une erreur est survenue lors de l\'exécution de la commande.';
+    const lang = getGuildLang(interaction.guildId ?? '');
+    const msg = t(lang).genericError;
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply(msg).catch(() => {});
     } else {
