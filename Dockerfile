@@ -20,4 +20,4 @@ RUN echo '{ \
 
 RUN npm install
 
-CMD ["tsx", "src/index.ts"]
+ENTRYPOINT ["tsx", "src/index.ts"]
