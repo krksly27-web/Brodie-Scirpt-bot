@@ -23,6 +23,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  // Defer ephemerally first so we can handle errors privately
   await interaction.deferReply({ ephemeral: true });
 
   const username = interaction.options.getString('username', true);
@@ -30,20 +31,28 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const days = interaction.options.getInteger('days', true);
 
   try {
-    const account = await createAccount(username, password, days);
+    await createAccount(username, password, days);
 
-    const embed = new EmbedBuilder()
+    // Send a public message in the channel
+    const publicEmbed = new EmbedBuilder()
       .setColor(0x00b894)
-      .setTitle('✅ Compte créé')
+      .setTitle('🔑 Nouveau compte créé')
       .addFields(
-        { name: 'Username', value: `\`${username}\``, inline: true },
-        { name: 'Password', value: `\`${password}\``, inline: true },
-        { name: 'Durée', value: `${days} jour(s)`, inline: true },
-        { name: 'ID', value: `\`${(account as any).id ?? 'N/A'}\``, inline: false }
+        { name: '👤 Username', value: `\`${username}\``, inline: true },
+        { name: '🔒 Password', value: `\`${password}\``, inline: true },
+        { name: '📅 Durée', value: `${days} jour(s)`, inline: true },
       )
-      .setTimestamp();
+      .setDescription(
+        '\n> Merci d\'avoir acheté chez **Brodie Scripts** !\n> Si vous avez besoin d\'aide, n\'hésitez pas à ouvrir un ticket 🎫'
+      )
+      .setTimestamp()
+      .setFooter({ text: 'Brodie Scripts' });
 
-    await interaction.editReply({ embeds: [embed] });
+    // Send public message in the channel
+    await interaction.channel?.send({ embeds: [publicEmbed] });
+
+    // Confirm privately to the admin who ran the command
+    await interaction.editReply({ content: '✅ Compte créé et message envoyé dans le salon.' });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     await interaction.editReply(`❌ Erreur: ${msg}`);
