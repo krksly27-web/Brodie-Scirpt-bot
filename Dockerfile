@@ -1,17 +1,23 @@
 FROM node:22-slim
 
-# Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g tsx
 
 WORKDIR /app
 
-# Copy workspace files needed for the bot
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.base.json tsconfig.json ./
-COPY artifacts/discord-bot ./artifacts/discord-bot
+# Copy only the discord bot files
+COPY artifacts/discord-bot/src ./src
+COPY artifacts/discord-bot/tsconfig.json ./tsconfig.json
 
-# Install only the discord-bot dependencies
-RUN pnpm install --filter @workspace/discord-bot --no-frozen-lockfile
+# Create a standalone package.json with explicit versions
+RUN echo '{ \
+  "name": "discord-bot", \
+  "version": "1.0.0", \
+  "type": "module", \
+  "dependencies": { \
+    "discord.js": "^14.16.3" \
+  } \
+}' > package.json
 
-WORKDIR /app/artifacts/discord-bot
+RUN npm install
 
-CMD ["npx", "tsx", "src/index.ts"]
+CMD ["tsx", "src/index.ts"]
