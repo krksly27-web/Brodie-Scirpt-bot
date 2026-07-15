@@ -2,11 +2,11 @@ export type Lang = 'fr' | 'en';
 
 export const translations = {
   fr: {
-    noPermission: '❌ Vous n\'avez pas la permission d\'utiliser cette commande.',
+    noPermission: '❌ Vous n\\'avez pas la permission d\\'utiliser cette commande.',
     guildOnly: '❌ Cette commande doit être utilisée dans un serveur.',
     notFound: (u: string) => `❌ Compte \`${u}\` introuvable.`,
     error: (m: string) => `❌ Erreur: ${m}`,
-    genericError: '❌ Une erreur est survenue lors de l\'exécution de la commande.',
+    genericError: '❌ Une erreur est survenue lors de l\\'exécution de la commande.',
     adminOnly: '❌ Seuls les administrateurs peuvent utiliser cette commande.',
 
     // genkey
@@ -15,7 +15,7 @@ export const translations = {
     genkeyFieldPass: '🔒 Password',
     genkeyFieldDays: '📅 Durée',
     genkeyDays: (d: number) => `${d} jour(s)`,
-    genkeyDescription: '> Merci d\'avoir acheté chez **Brodie Scripts** !\\n> Si vous avez besoin d\'aide, n\'hésitez pas à ouvrir un ticket 🎫',
+    genkeyDescription: '> Merci d\\'avoir acheté chez **Brodie Scripts** !\\\\n> Si vous avez besoin d\\'aide, n\\'hésitez pas à ouvrir un ticket 🎫',
     genkeyConfirm: '✅ Compte créé et message envoyé dans le salon.',
 
     // reset
@@ -41,6 +41,15 @@ export const translations = {
     langueField: 'Langue',
     langueValue: '🇫🇷 Français',
 
+    // profile
+    profileTitle: '👤 Profil du compte',
+    profileStatus: 'Statut',
+    profileStatusActive: '✅ Actif',
+    profileStatusBanned: '🚫 Banni',
+    profileExpired: '⏰ Expiré',
+    profileExpiresAt: 'Expire le',
+    profileDays: 'Durée',
+
     // shared fields
     fieldUsername: 'Username',
     fieldStatus: 'Statut',
@@ -61,7 +70,7 @@ export const translations = {
     genkeyFieldPass: '🔒 Password',
     genkeyFieldDays: '📅 Duration',
     genkeyDays: (d: number) => `${d} day(s)`,
-    genkeyDescription: '> Thank you for purchasing from **Brodie Scripts**!\\n> If you need any help, feel free to open a ticket 🎫',
+    genkeyDescription: '> Thank you for purchasing from **Brodie Scripts**!\\\\n> If you need any help, feel free to open a ticket 🎫',
     genkeyConfirm: '✅ Account created and message sent in the channel.',
 
     // reset
@@ -86,6 +95,15 @@ export const translations = {
     langueDesc: 'The bot language is now **English** 🇬🇧',
     langueField: 'Language',
     langueValue: '🇬🇧 English',
+
+    // profile
+    profileTitle: '👤 Account profile',
+    profileStatus: 'Status',
+    profileStatusActive: '✅ Active',
+    profileStatusBanned: '🚫 Banned',
+    profileExpired: '⏰ Expired',
+    profileExpiresAt: 'Expires on',
+    profileDays: 'Duration',
 
     // shared fields
     fieldUsername: 'Username',
