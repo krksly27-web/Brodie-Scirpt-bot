@@ -40,13 +40,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     const publicEmbed = new EmbedBuilder()
       .setColor(0x00b894)
-      .setTitle(tr.genkeyTitle)
-      .addFields(
-        { name: tr.genkeyFieldUser, value: `\`${username}\``, inline: true },
-        { name: tr.genkeyFieldPass, value: `\`${password}\``, inline: true },
-        { name: tr.genkeyFieldDays, value: tr.genkeyDays(days), inline: true },
-      )
-      .setDescription('\n' + tr.genkeyDescription)
+      .setTitle('✅ Merci de votre confiance, voici vos identifiants')
+      .setDescription(`
+-# Nom d'utilisateur
+\`${username}\`
+
+-# Mot de passe
+\`${password}\`
+
+Si vous rencontrez des problèmes ou autres, n'hésitez pas à ouvrir un ticket et à laisser un commentaire #:heart:-Feedback, merci de screen vos identifiants car en cas de perte/bugs, il ne seront pas redonnée ou aucune clé ne vous sera recreez.
+`)
       .setTimestamp()
       .setFooter({ text: tr.footer });
 
@@ -59,3 +62,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.editReply(tr.error(msg));
   }
 }
+
