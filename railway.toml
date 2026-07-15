@@ -3,4 +3,4 @@ dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "tsx src/index.ts"
-restartPolicyType = "always"
+restartPolicyType = "ON_FAILURE"
