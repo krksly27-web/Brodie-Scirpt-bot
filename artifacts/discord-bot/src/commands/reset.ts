@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import { findAccount, resetSessions } from '../api.js';
 import { getGuildLang } from '../langConfig.js';
+import { getRequiredRole } from '../roleConfig.js';
 import { t } from '../i18n.js';
 
 export const data = new SlashCommandBuilder()
@@ -15,11 +16,21 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  await interaction.deferReply({ ephemeral: true });
-
   const guildId = interaction.guildId ?? '';
   const lang = getGuildLang(guildId);
   const tr = t(lang);
+
+  // Vérifier si l'utilisateur a le rôle requis
+  const requiredRole = getRequiredRole(guildId);
+  if (requiredRole) {
+    const member = interaction.member;
+    if (!member || !('roles' in member) || !member.roles.cache.has(requiredRole)) {
+      await interaction.reply({ content: tr.noPermission, ephemeral: true });
+      return;
+    }
+  }
+
+  await interaction.deferReply({ ephemeral: false });
 
   const username = interaction.options.getString('username', true);
 
@@ -47,3 +58,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.editReply(tr.error(msg));
   }
 }
+
