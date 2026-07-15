@@ -118,6 +118,3 @@ export async function resetSessions(id: string): Promise<unknown> {
   return apiRequest('DELETE', `/api/accounts/${id}/sessions`);
 }
 
-export async function addDays(id: string, days: number): Promise<unknown> {
-  return apiRequest('POST', `/api/accounts/${id}/set-lifetime`, { days });
-}

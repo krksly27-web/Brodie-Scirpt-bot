@@ -15,7 +15,6 @@ import { t } from './i18n.js';
 
 // ---- Load commands ----
 import * as genkey from './commands/genkey.js';
-import * as extraday from './commands/extraday.js';
 import * as reset from './commands/reset.js';
 import * as ban from './commands/ban.js';
 import * as unban from './commands/unban.js';
@@ -27,7 +26,7 @@ type Command = {
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 };
 
-const commands: Command[] = [genkey, extraday, reset, ban, unban, setrole, langue];
+const commands: Command[] = [genkey, reset, ban, unban, setrole, langue];
 
 const commandMap = new Collection<string, Command>();
 for (const cmd of commands) {
@@ -125,3 +124,4 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.login(TOKEN);
+

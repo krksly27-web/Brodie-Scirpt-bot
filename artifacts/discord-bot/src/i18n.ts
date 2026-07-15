@@ -15,15 +15,8 @@ export const translations = {
     genkeyFieldPass: '🔒 Password',
     genkeyFieldDays: '📅 Durée',
     genkeyDays: (d: number) => `${d} jour(s)`,
-    genkeyDescription: '> Merci d\'avoir acheté chez **Brodie Scripts** !\n> Si vous avez besoin d\'aide, n\'hésitez pas à ouvrir un ticket 🎫',
+    genkeyDescription: '> Merci d\'avoir acheté chez **Brodie Scripts** !\\n> Si vous avez besoin d\'aide, n\'hésitez pas à ouvrir un ticket 🎫',
     genkeyConfirm: '✅ Compte créé et message envoyé dans le salon.',
-
-    // extraday
-    extradayTitle: '✅ Jours ajoutés',
-    extradayFieldAdded: 'Jours ajoutés',
-    extradayFieldAdded2: (d: number) => `+${d} jour(s)`,
-    extradayFieldTotal: 'Total restant',
-    extradayFieldTotal2: (d: number) => `${d} jour(s)`,
 
     // reset
     resetTitle: '✅ Sessions réinitialisées',
@@ -68,15 +61,8 @@ export const translations = {
     genkeyFieldPass: '🔒 Password',
     genkeyFieldDays: '📅 Duration',
     genkeyDays: (d: number) => `${d} day(s)`,
-    genkeyDescription: '> Thank you for purchasing from **Brodie Scripts**!\n> If you need any help, feel free to open a ticket 🎫',
+    genkeyDescription: '> Thank you for purchasing from **Brodie Scripts**!\\n> If you need any help, feel free to open a ticket 🎫',
     genkeyConfirm: '✅ Account created and message sent in the channel.',
-
-    // extraday
-    extradayTitle: '✅ Days added',
-    extradayFieldAdded: 'Days added',
-    extradayFieldAdded2: (d: number) => `+${d} day(s)`,
-    extradayFieldTotal: 'Remaining total',
-    extradayFieldTotal2: (d: number) => `${d} day(s)`,
 
     // reset
     resetTitle: '✅ Sessions reset',
@@ -111,3 +97,4 @@ export const translations = {
 export function t(lang: Lang) {
   return translations[lang];
 }
+
