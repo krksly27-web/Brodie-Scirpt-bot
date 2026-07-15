@@ -3,8 +3,9 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { findAccount } from '../api.js';
+import { findAccount, getAccount } from '../api.js';
 import { getGuildLang } from '../langConfig.js';
+import { getRequiredRole } from '../roleConfig.js';
 import { t } from '../i18n.js';
 
 export const data = new SlashCommandBuilder()
@@ -15,11 +16,21 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  await interaction.deferReply({ ephemeral: true });
-
   const guildId = interaction.guildId ?? '';
   const lang = getGuildLang(guildId);
   const tr = t(lang);
+
+  // Vérifier si l'utilisateur a le rôle requis
+  const requiredRole = getRequiredRole(guildId);
+  if (requiredRole) {
+    const member = interaction.member;
+    if (!member || !('roles' in member) || !member.roles.cache.has(requiredRole)) {
+      await interaction.reply({ content: tr.noPermission, ephemeral: true });
+      return;
+    }
+  }
+
+  await interaction.deferReply({ ephemeral: true });
 
   const username = interaction.options.getString('username', true);
 
@@ -29,44 +40,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return void (await interaction.editReply(tr.notFound(username)));
     }
 
-    // Déterminer le statut
-    let statusText = tr.profileStatusActive;
-    if (account.banned) {
-      statusText = tr.profileStatusBanned;
-    } else if (account.expiresAt) {
-      const expiryDate = new Date(account.expiresAt);
-      if (expiryDate < new Date()) {
-        statusText = tr.profileExpired;
-      }
-    }
+    const fullAccount = await getAccount(account.id);
 
     const embed = new EmbedBuilder()
-      .setColor(account.banned ? 0xff6b6b : 0x51cf66)
-      .setTitle(tr.profileTitle)
+      .setColor(0x3498db)
+      .setTitle(`👤 ${username}`)
       .addFields(
-        { name: tr.fieldUsername, value: `\`${username}\``, inline: true },
-        { name: tr.profileStatus, value: statusText, inline: true }
-      );
-
-    // Ajouter les champs optionnels
-    if (account.expiresAt) {
-      const expiryDate = new Date(account.expiresAt);
-      embed.addFields({
-        name: tr.profileExpiresAt,
-        value: `<t:${Math.floor(expiryDate.getTime() / 1000)}:f>`,
-        inline: false,
-      });
-    }
-
-    if (account.days) {
-      embed.addFields({
-        name: tr.profileDays,
-        value: tr.genkeyDays(account.days),
-        inline: true,
-      });
-    }
-
-    embed.setTimestamp().setFooter({ text: tr.footer });
+        { name: 'ID', value: `\`${fullAccount.id}\``, inline: true },
+        { name: '📅 Statut', value: fullAccount.banned ? '🚫 Banni' : '✅ Actif', inline: true },
+        { name: '⏰ Durée', value: fullAccount.days ? `${fullAccount.days} jour(s)` : 'N/A', inline: true },
+        { name: '📍 Expire le', value: fullAccount.expiresAt ? new Date(fullAccount.expiresAt).toLocaleString() : 'N/A', inline: false }
+      )
+      .setTimestamp()
+      .setFooter({ text: tr.footer });
 
     await interaction.editReply({ embeds: [embed] });
   } catch (err: unknown) {
